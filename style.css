@@ -1,0 +1,184 @@
+:root {
+    --primary-color: #a7c7e7;
+    --secondary-color: #dbe9f7;
+    --background-color: #f5f8fa;
+    --text-color: #334155;
+    --progress-bar-color: #89abcd;
+    --card-bg-color: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.05);
+    --border-radius: 12px;
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header, main, footer {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+h1, h2, h3 {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 0.2em;
+}
+
+h2 {
+    font-size: 2em;
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Form Styles */
+#registration-section {
+    background-color: var(--card-bg-color);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-family: 'Nunito', sans-serif;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(167, 199, 231, 0.5);
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-family: 'Nunito', sans-serif;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #92b5d8;
+}
+
+/* Dashboard Styles */
+.hidden {
+    display: none;
+}
+
+#dashboard-section h2 {
+    border: none;
+}
+
+.progress-card {
+    background-color: var(--card-bg-color);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 15px var(--shadow-color);
+    margin-bottom: 30px;
+}
+
+.progress-bar-container {
+    width: 100%;
+    background-color: var(--secondary-color);
+    border-radius: 20px;
+    height: 20px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background-color: var(--progress-bar-color);
+    height: 100%;
+    border-radius: 20px 0 0 20px;
+    transition: width 0.5s ease-in-out;
+}
+
+#health-bar-value {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+
+.trackers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.tracker-card {
+    background-color: var(--card-bg-color);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 15px var(--shadow-color);
+    text-align: left;
+}
+
+.tracker-card h3 {
+    margin-top: 0;
+}
+
+.tracker-value {
+    font-size: 1.5em;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.tracker-input {
+    width: calc(100% - 20px);
+    padding: 8px 10px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+}
+
+footer {
+    border-top: 2px solid var(--secondary-color);
+    padding-top: 20px;
+    margin-top: 40px;
+}

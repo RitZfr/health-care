@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Keep registration section for later, start with home
     const registrationSection = document.getElementById('registration-section');
     const dashboardSection = document.getElementById('dashboard-section');
     const registrationForm = document.getElementById('registration-form');
@@ -6,6 +7,112 @@ document.addEventListener('DOMContentLoaded', () => {
     const trackersGrid = document.querySelector('.trackers-grid');
     const healthBar = document.getElementById('health-bar');
     const healthBarValue = document.getElementById('health-bar-value');
+
+    // Registration form inputs for validation
+    const nameInput = document.getElementById('name');
+    const ageInput = document.getElementById('age');
+    const phoneInput = document.getElementById('phone');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+
+    // New Login elements
+    const loginSection = document.getElementById('login-section');
+    const loginForm = document.getElementById('login-form');
+    const showLoginLink = document.getElementById('show-login-link');
+    const showSignupLink = document.getElementById('show-signup-link');
+    let registeredUser = null;
+
+    // Sidebar elements
+    const menuButton = document.getElementById('menu-button');
+    const sidebar = document.getElementById('sidebar');
+    const closeButton = document.getElementById('close-button');
+    const overlay = document.getElementById('overlay');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+    // Main content sections
+    const sections = {
+        'home-section': document.getElementById('home-section'),
+        'registration-section': document.getElementById('registration-section'),
+        'login-section': document.getElementById('login-section'),
+        'dashboard-section': document.getElementById('dashboard-section'),
+        'reminders-section': document.getElementById('reminders-section'),
+        'doctors-section': document.getElementById('doctors-section'),
+        'emergency-section': document.getElementById('emergency-section'),
+        'footer': document.getElementById('footer'),
+        'about-section': document.getElementById('about-section'),
+    };
+    
+    // Links in sidebar map to different sections
+    const linkSectionMap = {
+        '#home-section': 'home-section',
+        '#registration-section': 'registration-section',
+        '#dashboard-section': 'dashboard-section',
+        '#reminders-section': 'reminders-section',
+        '#doctors-section': 'doctors-section',
+        '#emergency-section': 'emergency-section',
+        '#footer': 'footer',
+        '#about-section': 'about-section',
+    };
+
+    let userRegistered = false;
+
+    // Sidebar functionality
+    const openSidebar = () => {
+        sidebar.classList.add('open');
+        overlay.classList.remove('hidden');
+        overlay.classList.add('visible');
+    };
+
+    const closeSidebar = () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('visible');
+        // We use a timeout to hide the overlay after the transition
+        setTimeout(() => {
+             if (!sidebar.classList.contains('open')) {
+                overlay.classList.add('hidden');
+             }
+        }, 400);
+    };
+
+    menuButton.addEventListener('click', openSidebar);
+    closeButton.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+    
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+
+            // Find the section key from the link map
+            const targetId = Object.keys(linkSectionMap).find(key => href.endsWith(key));
+            
+            if (targetId && linkSectionMap[targetId]) {
+                 e.preventDefault();
+                 const sectionKey = linkSectionMap[targetId];
+
+                // Don't show dashboard if user is not registered yet
+                if (sectionKey === 'dashboard-section' && !userRegistered) {
+                    closeSidebar();
+                    alert("Please sign up or log in first to see the dashboard!");
+                    return;
+                }
+                 
+                // Hide all sections
+                Object.values(sections).forEach(section => {
+                    if(section) section.classList.add('hidden');
+                });
+
+                // Show target section
+                if (sections[sectionKey]) {
+                    sections[sectionKey].classList.remove('hidden');
+                     // The footer is part of the main flow, so we just scroll to it
+                    if (sectionKey === 'footer') {
+                        sections[sectionKey].scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            }
+            closeSidebar();
+        });
+    });
 
     const healthMetrics = {
         height: { label: 'Height', value: 170, unit: 'cm', max: 220, weight: 0.5 },
@@ -17,16 +124,152 @@ document.addEventListener('DOMContentLoaded', () => {
         sleep: { label: 'Sleep Schedule', value: 8, unit: 'hours', max: 10, weight: 1.5 }
     };
 
+    function clearValidationErrors() {
+        document.querySelectorAll('.error-message').forEach(el => {
+            el.textContent = '';
+            el.style.display = 'none';
+        });
+        document.querySelectorAll('.form-group input').forEach(el => {
+            el.classList.remove('invalid');
+        });
+    }
+
+    function validateForm() {
+        let isValid = true;
+        clearValidationErrors();
+
+        // Name validation (max 13 chars)
+        if (nameInput.value.length > 13) {
+            isValid = false;
+            const errorEl = nameInput.nextElementSibling;
+            errorEl.textContent = 'Name must be 13 characters or less.';
+            errorEl.style.display = 'block';
+            nameInput.classList.add('invalid');
+        }
+
+        // Age validation (13+)
+        if (parseInt(ageInput.value, 10) < 13) {
+            isValid = false;
+            const errorEl = ageInput.nextElementSibling;
+            errorEl.textContent = 'You must be at least 13 years old.';
+            errorEl.style.display = 'block';
+            ageInput.classList.add('invalid');
+        }
+
+        // Phone number validation (exactly 10 digits)
+        if (!/^\d{10}$/.test(phoneInput.value)) {
+            isValid = false;
+            const errorEl = phoneInput.nextElementSibling;
+            errorEl.textContent = 'Phone number must be exactly 10 digits.';
+            errorEl.style.display = 'block';
+            phoneInput.classList.add('invalid');
+        }
+
+        // Password validation
+        const password = passwordInput.value;
+        const passwordErrorEl = passwordInput.nextElementSibling;
+        let passwordError = '';
+
+        if (password.length < 8 || password.length > 20) {
+            passwordError = 'Password must be between 8 and 20 characters.';
+        } else if (!/[A-Z]/.test(password)) {
+            passwordError = 'Password must contain at least one capital letter.';
+        } else if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+            passwordError = 'Password must contain at least one special character.';
+        }
+
+        if (passwordError) {
+            isValid = false;
+            passwordErrorEl.textContent = passwordError;
+            passwordErrorEl.style.display = 'block';
+            passwordInput.classList.add('invalid');
+        }
+        
+        // Basic required field check
+        [nameInput, ageInput, phoneInput, emailInput, passwordInput].forEach(input => {
+            if (!input.value.trim()) {
+                isValid = false;
+                const errorEl = input.nextElementSibling;
+                if (!errorEl.textContent) { // Don't overwrite specific errors
+                     errorEl.textContent = 'This field is required.';
+                     errorEl.style.display = 'block';
+                     input.classList.add('invalid');
+                }
+            }
+        });
+
+
+        return isValid;
+    }
+
     registrationForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const name = document.getElementById('name').value;
+        
+        if (!validateForm()) {
+            return;
+        }
+
+        const name = nameInput.value;
+        const email = emailInput.value;
+        const phone = phoneInput.value;
+        const password = passwordInput.value;
+
+        registeredUser = { name, email, phone, password };
+        
         userNameSpan.textContent = name;
+        userRegistered = true;
 
         registrationSection.classList.add('hidden');
+        loginSection.classList.add('hidden');
+        sections['home-section'].classList.add('hidden');
         dashboardSection.classList.remove('hidden');
 
         populateDashboard();
         updateOverallHealth();
+    });
+
+    showLoginLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        registrationSection.classList.add('hidden');
+        loginSection.classList.remove('hidden');
+        sections['home-section'].classList.add('hidden');
+    });
+
+    showSignupLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        loginSection.classList.add('hidden');
+        registrationSection.classList.remove('hidden');
+        sections['home-section'].classList.add('hidden');
+    });
+
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const identifier = document.getElementById('login-identifier').value;
+        const password = document.getElementById('login-password').value;
+
+        if (!registeredUser) {
+            alert('No user is registered. Please sign up first.');
+            return;
+        }
+
+        if ((identifier === registeredUser.email || identifier === registeredUser.phone) && password === registeredUser.password) {
+            // Successful login
+            userNameSpan.textContent = registeredUser.name;
+            userRegistered = true;
+
+            loginSection.classList.add('hidden');
+            registrationSection.classList.add('hidden');
+            sections['home-section'].classList.add('hidden');
+            dashboardSection.classList.remove('hidden');
+
+            // Populate dashboard if it's the first time logging in this session
+            if (trackersGrid.innerHTML === '') {
+                populateDashboard();
+                updateOverallHealth();
+            }
+        } else {
+            alert('Invalid credentials. Please try again.');
+        }
     });
 
     function populateDashboard() {
@@ -77,6 +320,4 @@ document.addEventListener('DOMContentLoaded', () => {
         healthBar.style.width = `${healthPercentage}%`;
         healthBarValue.textContent = `${Math.round(healthPercentage)}%`;
     }
-
 });
-

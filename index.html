@@ -11,37 +11,106 @@
 </head>
 <body>
 
+    <button id="menu-button">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </button>
+
+    <aside id="sidebar">
+        <button id="close-button">&times;</button>
+        <nav>
+            <ul>
+                <li><a href="#home-section" class="sidebar-link">Home</a></li>
+                <li><a href="#registration-section" class="sidebar-link">Sign Up / Log In</a></li>
+                <li><a href="#dashboard-section" class="sidebar-link">Health Tracking</a></li>
+                <li><a href="#reminders-section" class="sidebar-link">Reminders</a></li>
+                <li><a href="#doctors-section" class="sidebar-link">Doctors to consult</a></li>
+                <li><a href="#emergency-section" class="sidebar-link">Emergency</a></li>
+                <li><a href="#footer" class="sidebar-link">Contacts</a></li>
+                <li><a href="#about-section" class="sidebar-link">About</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <div id="overlay" class="hidden"></div>
+
     <header>
         <h1>Your Wellness Journey</h1>
         <p>A cozy space to track your health progress.</p>
     </header>
 
     <main>
-        <section id="registration-section">
+        <section id="home-section">
+            <h2>Welcome to Your Wellness Journey</h2>
+            <p class="intro-text">In a fast-paced world, taking a moment for your health is more important than ever. Cozy Health provides a simple, beautiful space to mindfully track your well-being, helping you build positive habits and understand your body better.</p>
+            <h3>Why Track Your Health?</h3>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h4>Gain Awareness</h4>
+                    <p>Understand patterns in your sleep, energy, and mood. Knowledge is the first step to making positive changes.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Stay Motivated</h4>
+                    <p>Visualizing your progress on metrics like hydration and activity can be a powerful motivator to keep going.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Manage Conditions</h4>
+                    <p>Keep a reliable record of vitals like blood pressure and sugar levels to share with your healthcare provider.</p>
+                </div>
+                 <div class="benefit-card">
+                    <h4>Build Habits</h4>
+                    <p>Regularly logging your data helps turn healthy actions into second-nature habits for long-term wellness.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="registration-section" class="hidden">
             <h2>Create Your Profile</h2>
-            <form id="registration-form">
+            <form id="registration-form" novalidate>
                 <div class="form-group">
                     <label for="name">Name</label>
-                    <input type="text" id="name" name="name" required>
+                    <input type="text" id="name" name="name" required maxlength="13">
+                    <small class="error-message"></small>
                 </div>
                 <div class="form-group">
                     <label for="age">Age</label>
-                    <input type="number" id="age" name="age" required>
+                    <input type="number" id="age" name="age" required min="13">
+                    <small class="error-message"></small>
                 </div>
                 <div class="form-group">
                     <label for="phone">Phone Number</label>
-                    <input type="tel" id="phone" name="phone" required>
+                    <input type="tel" id="phone" name="phone" required maxlength="10">
+                    <small class="error-message"></small>
                 </div>
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" required>
+                    <small class="error-message"></small>
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
+                    <input type="password" id="password" name="password" required minlength="8" maxlength="20">
+                    <small class="error-message"></small>
                 </div>
-                <button type="submit">Start Tracking</button>
+                <button type="submit">Sign Up</button>
             </form>
+            <p class="auth-switch">Already have an account? <a href="#" id="show-login-link">Log In</a></p>
+        </section>
+
+        <section id="login-section" class="hidden">
+            <h2>Log In</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-identifier">Email or Phone</label>
+                    <input type="text" id="login-identifier" name="login-identifier" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" name="login-password" required>
+                </div>
+                <button type="submit">Log In</button>
+            </form>
+            <p class="auth-switch">Don't have an account? <a href="#" id="show-signup-link">Sign Up</a></p>
         </section>
 
         <section id="dashboard-section" class="hidden">
@@ -59,9 +128,30 @@
                 <!-- Data will be populated by JS -->
             </div>
         </section>
+        
+        <section id="reminders-section" class="page-section hidden">
+            <h2>Reminders</h2>
+            <p>Set and manage your health reminders here. (Coming soon!)</p>
+        </section>
+
+        <section id="doctors-section" class="page-section hidden">
+            <h2>Doctors to Consult</h2>
+            <p>Find and save contact information for your doctors. (Coming soon!)</p>
+        </section>
+
+        <section id="emergency-section" class="page-section hidden">
+            <h2>Emergency</h2>
+            <p>Quick access to emergency contacts and information. (Coming soon!)</p>
+        </section>
+        
+        <section id="about-section" class="page-section hidden">
+            <h2>About Cozy Health</h2>
+            <p>Your cozy space for wellness tracking. We believe in making health management a simple and pleasant experience.</p>
+        </section>
+
     </main>
 
-    <footer>
+    <footer id="footer">
         <h2>Contact Our Team</h2>
         <p>Have questions? We're here to help!</p>
         <p>Email: <a href="mailto:support@cozyhealth.com">support@cozyhealth.com</a></p>
@@ -71,4 +161,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-

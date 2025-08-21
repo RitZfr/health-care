@@ -16,6 +16,54 @@
         <div class="dot"></div>
         <div class="dot"></div>
     </button>
+    <!-- <script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+
+        const contactTabLink = document.querySelector('a[href="#footer"]');
+
+        const footer = document.getElementById('footer');
+
+        const allSections = document.querySelectorAll('main > section, #footer');
+
+
+
+        // Hide footer initially
+
+        footer.style.display = "none";
+
+
+
+        contactTabLink.addEventListener("click", function(e) {
+
+            e.preventDefault();
+
+            allSections.forEach(section => section.classList.add("hidden"));
+
+            footer.style.display = "block";
+
+            footer.scrollIntoView({ behavior: "smooth" });
+
+        });
+
+
+
+        // Hide footer when navigating to other tabs
+
+        document.querySelectorAll('.sidebar-link:not([href="#footer"])').forEach(link => {
+
+            link.addEventListener("click", function() {
+
+                footer.style.display = "none";
+
+            });
+
+        });
+
+    });
+
+    </script> -->
+
 
     <aside id="sidebar">
         <button id="close-button">&times;</button>
@@ -161,3 +209,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+

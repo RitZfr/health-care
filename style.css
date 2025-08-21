@@ -1,324 +1,747 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Keep registration section for later, start with home
-    const registrationSection = document.getElementById('registration-section');
-    const dashboardSection = document.getElementById('dashboard-section');
-    const registrationForm = document.getElementById('registration-form');
-    const userNameSpan = document.getElementById('user-name');
-    const trackersGrid = document.querySelector('.trackers-grid');
-    const healthBar = document.getElementById('health-bar');
-    const healthBarValue = document.getElementById('health-bar-value');
+:root {
 
-    // Registration form inputs for validation
-    const nameInput = document.getElementById('name');
-    const ageInput = document.getElementById('age');
-    const phoneInput = document.getElementById('phone');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
+    --primary-color: #a7c7e7;
 
-    // New Login elements
-    const loginSection = document.getElementById('login-section');
-    const loginForm = document.getElementById('login-form');
-    const showLoginLink = document.getElementById('show-login-link');
-    const showSignupLink = document.getElementById('show-signup-link');
-    let registeredUser = null;
+    --secondary-color: #dbe9f7;
 
-    // Sidebar elements
-    const menuButton = document.getElementById('menu-button');
-    const sidebar = document.getElementById('sidebar');
-    const closeButton = document.getElementById('close-button');
-    const overlay = document.getElementById('overlay');
-    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    --background-color: #f5f8fa;
 
-    // Main content sections
-    const sections = {
-        'home-section': document.getElementById('home-section'),
-        'registration-section': document.getElementById('registration-section'),
-        'login-section': document.getElementById('login-section'),
-        'dashboard-section': document.getElementById('dashboard-section'),
-        'reminders-section': document.getElementById('reminders-section'),
-        'doctors-section': document.getElementById('doctors-section'),
-        'emergency-section': document.getElementById('emergency-section'),
-        'footer': document.getElementById('footer'),
-        'about-section': document.getElementById('about-section'),
-    };
-    
-    // Links in sidebar map to different sections
-    const linkSectionMap = {
-        '#home-section': 'home-section',
-        '#registration-section': 'registration-section',
-        '#dashboard-section': 'dashboard-section',
-        '#reminders-section': 'reminders-section',
-        '#doctors-section': 'doctors-section',
-        '#emergency-section': 'emergency-section',
-        '#footer': 'footer',
-        '#about-section': 'about-section',
-    };
+    --text-color: #2c3e50; /* Darker text */
 
-    let userRegistered = false;
+    --progress-bar-color: #89abcd;
 
-    // Sidebar functionality
-    const openSidebar = () => {
-        sidebar.classList.add('open');
-        overlay.classList.remove('hidden');
-        overlay.classList.add('visible');
-    };
+    --card-bg-color: #ffffff;
 
-    const closeSidebar = () => {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('visible');
-        // We use a timeout to hide the overlay after the transition
-        setTimeout(() => {
-             if (!sidebar.classList.contains('open')) {
-                overlay.classList.add('hidden');
-             }
-        }, 400);
-    };
+    --shadow-color: rgba(0, 0, 0, 0.05);
 
-    menuButton.addEventListener('click', openSidebar);
-    closeButton.addEventListener('click', closeSidebar);
-    overlay.addEventListener('click', closeSidebar);
-    
-    sidebarLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            const href = link.getAttribute('href');
+    --border-radius: 12px;
 
-            // Find the section key from the link map
-            const targetId = Object.keys(linkSectionMap).find(key => href.endsWith(key));
-            
-            if (targetId && linkSectionMap[targetId]) {
-                 e.preventDefault();
-                 const sectionKey = linkSectionMap[targetId];
-
-                // Don't show dashboard if user is not registered yet
-                if (sectionKey === 'dashboard-section' && !userRegistered) {
-                    closeSidebar();
-                    alert("Please sign up or log in first to see the dashboard!");
-                    return;
-                }
-                 
-                // Hide all sections
-                Object.values(sections).forEach(section => {
-                    if(section) section.classList.add('hidden');
-                });
-
-                // Show target section
-                if (sections[sectionKey]) {
-                    sections[sectionKey].classList.remove('hidden');
-                     // The footer is part of the main flow, so we just scroll to it
-                    if (sectionKey === 'footer') {
-                        sections[sectionKey].scrollIntoView({ behavior: 'smooth' });
-                    }
-                }
-            }
-            closeSidebar();
-        });
-    });
-
-    const healthMetrics = {
-        height: { label: 'Height', value: 170, unit: 'cm', max: 220, weight: 0.5 },
-        weight: { label: 'Weight', value: 70, unit: 'kg', max: 150, weight: 1.5 },
-        hydration: { label: 'Hydration', value: 8, unit: 'glasses', max: 12, weight: 1 },
-        heartbeat: { label: 'Heartbeat', value: 70, unit: 'bpm', max: 120, weight: 1.5 },
-        bloodPressure: { label: 'Blood Pressure', value: '120/80', unit: 'mmHg', weight: 1.5, type: 'text' },
-        sugarLevel: { label: 'Sugar Level', value: 90, unit: 'mg/dL', max: 140, weight: 1.5 },
-        sleep: { label: 'Sleep Schedule', value: 8, unit: 'hours', max: 10, weight: 1.5 }
-    };
-
-    function clearValidationErrors() {
-        document.querySelectorAll('.error-message').forEach(el => {
-            el.textContent = '';
-            el.style.display = 'none';
-        });
-        document.querySelectorAll('.form-group input').forEach(el => {
-            el.classList.remove('invalid');
-        });
-    }
-
-    function validateForm() {
-        let isValid = true;
-        clearValidationErrors();
-
-        // Name validation (max 13 chars)
-        if (nameInput.value.length > 13) {
-            isValid = false;
-            const errorEl = nameInput.nextElementSibling;
-            errorEl.textContent = 'Name must be 13 characters or less.';
-            errorEl.style.display = 'block';
-            nameInput.classList.add('invalid');
-        }
-
-        // Age validation (13+)
-        if (parseInt(ageInput.value, 10) < 13) {
-            isValid = false;
-            const errorEl = ageInput.nextElementSibling;
-            errorEl.textContent = 'You must be at least 13 years old.';
-            errorEl.style.display = 'block';
-            ageInput.classList.add('invalid');
-        }
-
-        // Phone number validation (exactly 10 digits)
-        if (!/^\d{10}$/.test(phoneInput.value)) {
-            isValid = false;
-            const errorEl = phoneInput.nextElementSibling;
-            errorEl.textContent = 'Phone number must be exactly 10 digits.';
-            errorEl.style.display = 'block';
-            phoneInput.classList.add('invalid');
-        }
-
-        // Password validation
-        const password = passwordInput.value;
-        const passwordErrorEl = passwordInput.nextElementSibling;
-        let passwordError = '';
-
-        if (password.length < 8 || password.length > 20) {
-            passwordError = 'Password must be between 8 and 20 characters.';
-        } else if (!/[A-Z]/.test(password)) {
-            passwordError = 'Password must contain at least one capital letter.';
-        } else if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-            passwordError = 'Password must contain at least one special character.';
-        }
-
-        if (passwordError) {
-            isValid = false;
-            passwordErrorEl.textContent = passwordError;
-            passwordErrorEl.style.display = 'block';
-            passwordInput.classList.add('invalid');
-        }
-        
-        // Basic required field check
-        [nameInput, ageInput, phoneInput, emailInput, passwordInput].forEach(input => {
-            if (!input.value.trim()) {
-                isValid = false;
-                const errorEl = input.nextElementSibling;
-                if (!errorEl.textContent) { // Don't overwrite specific errors
-                     errorEl.textContent = 'This field is required.';
-                     errorEl.style.display = 'block';
-                     input.classList.add('invalid');
-                }
-            }
-        });
+}
 
 
-        return isValid;
-    }
 
-    registrationForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        if (!validateForm()) {
-            return;
-        }
+body {
 
-        const name = nameInput.value;
-        const email = emailInput.value;
-        const phone = phoneInput.value;
-        const password = passwordInput.value;
+    font-family: 'Nunito', sans-serif;
 
-        registeredUser = { name, email, phone, password };
-        
-        userNameSpan.textContent = name;
-        userRegistered = true;
+    background: linear-gradient(to top, #dbe9f7, #f5f8fa);
 
-        registrationSection.classList.add('hidden');
-        loginSection.classList.add('hidden');
-        sections['home-section'].classList.add('hidden');
-        dashboardSection.classList.remove('hidden');
+    color: var(--text-color);
 
-        populateDashboard();
-        updateOverallHealth();
-    });
+    line-height: 1.6;
 
-    showLoginLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        registrationSection.classList.add('hidden');
-        loginSection.classList.remove('hidden');
-        sections['home-section'].classList.add('hidden');
-    });
+    margin: 0;
 
-    showSignupLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        loginSection.classList.add('hidden');
-        registrationSection.classList.remove('hidden');
-        sections['home-section'].classList.add('hidden');
-    });
+    padding: 20px;
 
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const identifier = document.getElementById('login-identifier').value;
-        const password = document.getElementById('login-password').value;
+    display: flex;
 
-        if (!registeredUser) {
-            alert('No user is registered. Please sign up first.');
-            return;
-        }
+    flex-direction: column;
 
-        if ((identifier === registeredUser.email || identifier === registeredUser.phone) && password === registeredUser.password) {
-            // Successful login
-            userNameSpan.textContent = registeredUser.name;
-            userRegistered = true;
+    align-items: center;
 
-            loginSection.classList.add('hidden');
-            registrationSection.classList.add('hidden');
-            sections['home-section'].classList.add('hidden');
-            dashboardSection.classList.remove('hidden');
+    min-height: 100vh;
 
-            // Populate dashboard if it's the first time logging in this session
-            if (trackersGrid.innerHTML === '') {
-                populateDashboard();
-                updateOverallHealth();
-            }
-        } else {
-            alert('Invalid credentials. Please try again.');
-        }
-    });
+    box-sizing: border-box;
 
-    function populateDashboard() {
-        trackersGrid.innerHTML = '';
-        for (const key in healthMetrics) {
-            const metric = healthMetrics[key];
-            const card = document.createElement('div');
-            card.className = 'tracker-card';
-            card.innerHTML = `
-                <h3>${metric.label}</h3>
-                <div class="tracker-value">${metric.value} ${metric.unit}</div>
-                <input type="${metric.type || 'number'}" class="tracker-input" data-metric="${key}" value="${metric.value}" placeholder="Update value...">
-            `;
-            trackersGrid.appendChild(card);
-        }
+}
 
-        document.querySelectorAll('.tracker-input').forEach(input => {
-            input.addEventListener('change', (e) => {
-                const metricKey = e.target.dataset.metric;
-                const newValue = e.target.type === 'number' ? parseFloat(e.target.value) : e.target.value;
-                
-                if (!isNaN(newValue) || e.target.type === 'text') {
-                    healthMetrics[metricKey].value = newValue;
-                    e.target.previousElementSibling.textContent = `${newValue} ${healthMetrics[metricKey].unit}`;
-                    updateOverallHealth();
-                }
-            });
-        });
-    }
 
-    function updateOverallHealth() {
-        let totalScore = 0;
-        let totalWeight = 0;
 
-        for (const key in healthMetrics) {
-            const metric = healthMetrics[key];
-            if (metric.type !== 'text') {
-                 // Simple normalization: value / max * 100
-                 // In a real app, this would be more complex (e.g., ideal ranges)
-                const score = (metric.value / metric.max) * 100;
-                totalScore += score * metric.weight;
-                totalWeight += metric.weight;
-            }
-        }
-        
-        const healthPercentage = Math.min(100, Math.max(0, totalScore / totalWeight));
-        
-        healthBar.style.width = `${healthPercentage}%`;
-        healthBarValue.textContent = `${Math.round(healthPercentage)}%`;
-    }
-});
-        
+header, main, footer {
+
+    width: 100%;
+
+    max-width: 800px;
+
+    margin-bottom: 30px;
+
+    text-align: center;
+
+}
+
+
+
+h1, h2, h3 {
+
+    color: var(--primary-color);
+
+    font-weight: 700;
+
+}
+
+
+
+h1 {
+
+    font-size: 2.5em;
+
+    margin-bottom: 0.2em;
+
+}
+
+
+
+h2 {
+
+    font-size: 2em;
+
+    border-bottom: 2px solid var(--secondary-color);
+
+    padding-bottom: 10px;
+
+    margin-bottom: 20px;
+
+}
+
+
+
+a {
+
+    color: var(--primary-color);
+
+    text-decoration: none;
+
+}
+
+
+
+a:hover {
+
+    text-decoration: underline;
+
+}
+
+
+
+/* Home Page Styles */
+
+#home-section .intro-text {
+
+    font-size: 1.1em;
+
+    margin-bottom: 40px;
+
+    max-width: 700px;
+
+    margin-left: auto;
+
+    margin-right: auto;
+
+}
+
+
+
+#home-section h3 {
+
+    margin-bottom: 20px;
+
+    font-size: 1.8em;
+
+}
+
+
+
+.benefits-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+    gap: 20px;
+
+    text-align: left;
+
+}
+
+
+
+.benefit-card {
+
+    background-color: var(--card-bg-color);
+
+    padding: 25px;
+
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 4px 15px var(--shadow-color);
+
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+}
+
+
+
+.benefit-card:hover {
+
+    transform: translateY(-5px);
+
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+
+}
+
+
+
+.benefit-card h4 {
+
+    color: var(--primary-color);
+
+    margin-top: 0;
+
+    font-size: 1.2em;
+
+}
+
+
+
+.benefit-card p {
+
+    margin-bottom: 0;
+
+}
+
+
+
+/* Form Styles */
+
+#registration-section, #login-section {
+
+    background-color: var(--card-bg-color);
+
+    padding: 30px;
+
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 4px 15px var(--shadow-color);
+
+    margin-bottom: 20px; /* Added to give space between form and other sections */
+
+}
+
+
+
+.auth-switch {
+
+    margin-top: 20px;
+
+    font-size: 0.9em;
+
+}
+
+
+
+.form-group {
+
+    margin-bottom: 15px;
+
+    text-align: left;
+
+}
+
+
+
+.form-group label {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-weight: 600;
+
+}
+
+
+
+.form-group input {
+
+    width: 100%;
+
+    padding: 10px;
+
+    border: 1px solid var(--secondary-color);
+
+    border-radius: 8px;
+
+    box-sizing: border-box;
+
+    font-family: 'Nunito', sans-serif;
+
+}
+
+
+
+.form-group input:focus {
+
+    outline: none;
+
+    border-color: var(--primary-color);
+
+    box-shadow: 0 0 5px rgba(167, 199, 231, 0.5);
+
+}
+
+
+
+.error-message {
+
+    color: #e53e3e;
+
+    font-size: 0.8em;
+
+    display: none;
+
+    margin-top: 5px;
+
+}
+
+
+
+.form-group input.invalid {
+
+    border-color: #e53e3e;
+
+}
+
+
+
+button {
+
+    background-color: var(--primary-color);
+
+    color: white;
+
+    padding: 12px 20px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 1em;
+
+    font-family: 'Nunito', sans-serif;
+
+    transition: background-color 0.3s ease;
+
+    margin-top: 10px;
+
+}
+
+
+
+#registration-form button {
+
+    width: auto;
+
+    padding: 12px 40px;
+
+}
+
+
+
+button:hover {
+
+    background-color: #92b5d8;
+
+}
+
+
+
+/* Sidebar and Menu Button Styles */
+
+#menu-button {
+
+    position: fixed;
+
+    top: 20px;
+
+    left: 20px;
+
+    z-index: 1001;
+
+    cursor: pointer;
+
+    background: var(--card-bg-color);
+
+    border: none;
+
+    border-radius: 50%;
+
+    width: 50px;
+
+    height: 50px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 4px;
+
+    box-shadow: 0 2px 10px var(--shadow-color);
+
+    padding: 0;
+
+    transition: all 0.3s ease;
+
+}
+
+
+
+#menu-button:hover {
+
+    transform: scale(1.1);
+
+    box-shadow: 0 4px 15px var(--shadow-color);
+
+}
+
+
+
+#menu-button .dot {
+
+    width: 5px;
+
+    height: 5px;
+
+    background-color: var(--primary-color);
+
+    border-radius: 50%;
+
+    transition: all 0.3s ease;
+
+}
+
+
+
+#menu-button:hover .dot:nth-child(1) {
+
+    transform: translateY(-2px);
+
+}
+
+
+
+#menu-button:hover .dot:nth-child(3) {
+
+    transform: translateY(2px);
+
+}
+
+
+
+#sidebar {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: 280px;
+
+    height: 100%;
+
+    background-color: var(--card-bg-color);
+
+    z-index: 1002;
+
+    transform: translateX(-100%);
+
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    padding: 60px 0;
+
+    box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+
+    box-sizing: border-box;
+
+}
+
+
+
+#sidebar.open {
+
+    transform: translateX(0);
+
+}
+
+
+
+#close-button {
+
+    position: absolute;
+
+    top: 15px;
+
+    right: 15px;
+
+    background: none;
+
+    border: none;
+
+    font-size: 2.5em;
+
+    color: var(--text-color);
+
+    cursor: pointer;
+
+    padding: 0;
+
+    line-height: 1;
+
+    width: auto;
+
+}
+
+
+
+#sidebar ul {
+
+    list-style: none;
+
+    padding: 0;
+
+    margin: 0;
+
+}
+
+
+
+#sidebar li a {
+
+    display: block;
+
+    padding: 15px 30px;
+
+    color: var(--text-color);
+
+    text-decoration: none;
+
+    font-size: 1.1em;
+
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    border-bottom: 1px solid var(--secondary-color);
+
+}
+
+
+
+#sidebar li:first-child a {
+
+     border-top: 1px solid var(--secondary-color);
+
+}
+
+
+
+#sidebar li a:hover {
+
+    background-color: var(--secondary-color);
+
+    color: var(--primary-color);
+
+}
+
+
+
+#overlay {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    background-color: rgba(0, 0, 0, 0.4);
+
+    z-index: 1000;
+
+}
+
+
+
+#overlay.visible {
+
+    opacity: 1;
+
+    pointer-events: auto;
+
+}
+
+
+
+/* Dashboard Styles */
+
+.hidden {
+
+    display: none;
+
+}
+
+
+
+#dashboard-section h2 {
+
+    border: none;
+
+}
+
+
+
+.progress-card {
+
+    background-color: var(--card-bg-color);
+
+    padding: 20px;
+
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 4px 15px var(--shadow-color);
+
+    margin-bottom: 30px;
+
+}
+
+
+
+.progress-bar-container {
+
+    width: 100%;
+
+    background-color: var(--secondary-color);
+
+    border-radius: 20px;
+
+    height: 20px;
+
+    margin: 10px 0;
+
+    overflow: hidden;
+
+}
+
+
+
+.progress-bar {
+
+    background-color: var(--progress-bar-color);
+
+    height: 100%;
+
+    border-radius: 20px 0 0 20px;
+
+    transition: width 0.5s ease-in-out;
+
+}
+
+
+
+#health-bar-value {
+
+    font-weight: 700;
+
+    color: var(--primary-color);
+
+}
+
+
+
+.trackers-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+    gap: 20px;
+
+}
+
+
+
+.tracker-card {
+
+    background-color: var(--card-bg-color);
+
+    padding: 20px;
+
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 4px 15px var(--shadow-color);
+
+    text-align: left;
+
+}
+
+
+
+.tracker-card h3 {
+
+    margin-top: 0;
+
+}
+
+
+
+.tracker-value {
+
+    font-size: 1.5em;
+
+    font-weight: 700;
+
+    margin-bottom: 10px;
+
+}
+
+
+
+.tracker-input {
+
+    width: calc(100% - 20px);
+
+    padding: 8px 10px;
+
+    border: 1px solid var(--secondary-color);
+
+    border-radius: 8px;
+
+    font-family: 'Nunito', sans-serif;
+
+}
+
+
+
+.page-section {
+
+    background-color: var(--card-bg-color);
+
+    padding: 30px;
+
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 4px 15px var(--shadow-color);
+
+    text-align: center;
+
+}
+
+
+
+footer {
+
+    border-top: 2px solid var(--secondary-color);
+
+    padding-top: 20px;
+
+    margin-top: 40px;
+
+}

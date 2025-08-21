@@ -16,54 +16,6 @@
         <div class="dot"></div>
         <div class="dot"></div>
     </button>
-    <!-- <script>
-
-    document.addEventListener("DOMContentLoaded", function() {
-
-        const contactTabLink = document.querySelector('a[href="#footer"]');
-
-        const footer = document.getElementById('footer');
-
-        const allSections = document.querySelectorAll('main > section, #footer');
-
-
-
-        // Hide footer initially
-
-        footer.style.display = "none";
-
-
-
-        contactTabLink.addEventListener("click", function(e) {
-
-            e.preventDefault();
-
-            allSections.forEach(section => section.classList.add("hidden"));
-
-            footer.style.display = "block";
-
-            footer.scrollIntoView({ behavior: "smooth" });
-
-        });
-
-
-
-        // Hide footer when navigating to other tabs
-
-        document.querySelectorAll('.sidebar-link:not([href="#footer"])').forEach(link => {
-
-            link.addEventListener("click", function() {
-
-                footer.style.display = "none";
-
-            });
-
-        });
-
-    });
-
-    </script> -->
-
 
     <aside id="sidebar">
         <button id="close-button">&times;</button>
@@ -91,6 +43,14 @@
         <section id="home-section">
             <h2>Welcome to Your Wellness Journey</h2>
             <p class="intro-text">In a fast-paced world, taking a moment for your health is more important than ever. Cozy Health provides a simple, beautiful space to mindfully track your well-being, helping you build positive habits and understand your body better.</p>
+            
+            <div class="home-collage">
+                <img src="home-collage-1.png" alt="Person jogging in a park" class="collage-img-1">
+                <img src="home-collage-2.png" alt="Healthy salad bowl" class="collage-img-2">
+                <img src="home-collage-3.png" alt="Person drinking water with lemon" class="collage-img-3">
+                <img src="home-collage-4.png" alt="Person meditating peacefully" class="collage-img-4">
+            </div>
+
             <h3>Why Track Your Health?</h3>
             <div class="benefits-grid">
                 <div class="benefit-card">
@@ -167,9 +127,12 @@
             <div class="progress-card">
                 <h3>Overall Health</h3>
                 <div class="progress-bar-container">
-                    <div id="health-bar" class="progress-bar" style="width: 50%;"></div>
+                    <div id="health-bar" class="progress-bar" style="width: 0%;"></div>
                 </div>
-                <span id="health-bar-value">50%</span>
+                <div class="health-summary">
+                    <span id="health-bar-value">Enter your data to see your score</span>
+                    <p id="health-bar-message"></p>
+                </div>
             </div>
 
             <div class="trackers-grid">
@@ -178,8 +141,21 @@
         </section>
         
         <section id="reminders-section" class="page-section hidden">
-            <h2>Reminders</h2>
-            <p>Set and manage your health reminders here. (Coming soon!)</p>
+            <h2>Reminders & Alarms</h2>
+            <form id="reminder-form">
+                <div class="form-group">
+                    <label for="reminder-text">What to remember?</label>
+                    <input type="text" id="reminder-text" placeholder="e.g., Take medication" required>
+                </div>
+                <div class="form-group">
+                    <label for="reminder-time">When?</label>
+                    <input type="time" id="reminder-time" required>
+                </div>
+                <button type="submit">Add Reminder</button>
+            </form>
+            <div id="reminders-list">
+                <!-- Reminders will be added here -->
+            </div>
         </section>
 
         <section id="doctors-section" class="page-section hidden">
@@ -195,6 +171,23 @@
         <section id="about-section" class="page-section hidden">
             <h2>About Cozy Health</h2>
             <p>Your cozy space for wellness tracking. We believe in making health management a simple and pleasant experience.</p>
+            <div class="about-features">
+                <div class="about-feature-card">
+                    <img src="about-health.png" alt="Health icon">
+                    <h4>Holistic Health</h4>
+                    <p>Track everything from your heart rate to your sleep schedule to get a complete picture of your well-being.</p>
+                </div>
+                <div class="about-feature-card">
+                    <img src="about-fitness.png" alt="Fitness icon">
+                    <h4>Active Lifestyle</h4>
+                    <p>Monitor your physical activity and see your progress, motivating you to stay fit and healthy.</p>
+                </div>
+                <div class="about-feature-card">
+                    <img src="about-hydration.png" alt="Hydration icon">
+                    <h4>Stay Hydrated</h4>
+                    <p>Proper hydration is key. Our tools help you ensure you're getting enough water throughout the day.</p>
+                </div>
+            </div>
         </section>
 
     </main>
@@ -206,7 +199,7 @@
         <p>Phone: 1-800-555-HEALTH</p>
     </footer>
 
+    <audio id="alarm-sound" src="alarm.mp3" preload="auto"></audio>
     <script src="script.js"></script>
 </body>
 </html>
-

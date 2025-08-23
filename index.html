@@ -12,9 +12,9 @@
 <body>
 
     <button id="menu-button">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
     </button>
 
     <aside id="sidebar">
@@ -24,6 +24,7 @@
                 <li><a href="#home-section" class="sidebar-link">Home</a></li>
                 <li><a href="#registration-section" class="sidebar-link">Sign Up / Log In</a></li>
                 <li><a href="#dashboard-section" class="sidebar-link">Health Tracking</a></li>
+                <li><a href="#progress-section" class="sidebar-link">Progress History</a></li>
                 <li><a href="#reminders-section" class="sidebar-link">Reminders</a></li>
                 <li><a href="#doctors-section" class="sidebar-link">Doctors to consult</a></li>
                 <li><a href="#emergency-section" class="sidebar-link">Emergency</a></li>
@@ -133,10 +134,18 @@
                     <span id="health-bar-value">Enter your data to see your score</span>
                     <p id="health-bar-message"></p>
                 </div>
+                <button id="save-progress-btn">Save Today's Progress</button>
             </div>
 
             <div class="trackers-grid">
                 <!-- Data will be populated by JS -->
+            </div>
+        </section>
+        
+        <section id="progress-section" class="page-section hidden">
+            <h2>Your Health Progress</h2>
+            <div class="chart-container">
+                <canvas id="progress-chart"></canvas>
             </div>
         </section>
         
@@ -200,6 +209,7 @@
     </footer>
 
     <audio id="alarm-sound" src="alarm.mp3" preload="auto"></audio>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -30,6 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const alarmSound = document.getElementById('alarm-sound');
     let reminders = [];
 
+    // Progress History elements
+    const progressSection = document.getElementById('progress-section');
+    const progressChartCanvas = document.getElementById('progress-chart');
+    const saveProgressBtn = document.getElementById('save-progress-btn');
+    let healthHistory = []; // Array of { date: 'YYYY-MM-DD', score: 85 }
+    let progressChart = null; // To hold the chart instance
+
     // Sidebar elements
     const menuButton = document.getElementById('menu-button');
     const sidebar = document.getElementById('sidebar');
@@ -43,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'registration-section': document.getElementById('registration-section'),
         'login-section': document.getElementById('login-section'),
         'dashboard-section': document.getElementById('dashboard-section'),
+        'progress-section': document.getElementById('progress-section'),
         'reminders-section': document.getElementById('reminders-section'),
         'doctors-section': document.getElementById('doctors-section'),
         'emergency-section': document.getElementById('emergency-section'),
@@ -55,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         '#home-section': 'home-section',
         '#registration-section': 'registration-section',
         '#dashboard-section': 'dashboard-section',
+        '#progress-section': 'progress-section',
         '#reminders-section': 'reminders-section',
         '#doctors-section': 'doctors-section',
         '#emergency-section': 'emergency-section',
@@ -112,6 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Show target section
                 if (sections[sectionKey]) {
                     sections[sectionKey].classList.remove('hidden');
+                    // Special handler for progress chart
+                    if (sectionKey === 'progress-section') {
+                        renderProgressChart();
+                    }
                      // The footer is part of the main flow, so we just scroll to it
                     if (sectionKey === 'footer') {
                         sections[sectionKey].scrollIntoView({ behavior: 'smooth' });
@@ -278,6 +291,124 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             alert('Invalid credentials. Please try again.');
+        }
+    });
+
+    // --- Progress History ---
+    function renderProgressChart() {
+        if (progressChart) {
+            progressChart.destroy(); // Destroy previous chart instance to avoid conflicts
+        }
+    
+        const container = document.querySelector('.chart-container');
+        let message = container.querySelector('.no-data-message');
+        if (message) message.remove(); // Clear previous message/button
+    
+        if (healthHistory.length === 0) {
+            progressChartCanvas.style.display = 'none';
+            message = document.createElement('div');
+            message.className = 'no-data-message';
+            message.innerHTML = `
+                <p>No progress saved yet. Start your journey today!</p>
+                <button id="start-tracking-btn">Start Tracking Now</button>
+            `;
+            container.prepend(message);
+            
+            document.getElementById('start-tracking-btn').addEventListener('click', () => {
+                // Hide all sections
+                Object.values(sections).forEach(section => {
+                    if(section) section.classList.add('hidden');
+                });
+                // Show dashboard
+                sections['dashboard-section'].classList.remove('hidden');
+            });
+            
+            return;
+        } 
+        
+        progressChartCanvas.style.display = 'block';
+    
+        const labels = healthHistory.map(entry => entry.date);
+        const data = healthHistory.map(entry => entry.score);
+    
+        const ctx = progressChartCanvas.getContext('2d');
+        progressChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Overall Health Score History',
+                    data: data,
+                    borderColor: 'var(--progress-bar-color)',
+                    backgroundColor: 'rgba(137, 171, 205, 0.2)',
+                    fill: true,
+                    tension: 0.2,
+                    pointBackgroundColor: 'var(--primary-color)',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Health Score (%)'
+                        }
+                    },
+                    x: {
+                         title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Score: ${context.parsed.y}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    saveProgressBtn.addEventListener('click', () => {
+        const currentDate = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format
+        const currentScoreText = healthBarValue.textContent;
+        
+        const scoreMatch = currentScoreText.match(/(\d+)%/);
+        if (!scoreMatch) {
+            alert("No score to save. Please enter some metrics first.");
+            return;
+        }
+        
+        const currentScore = parseInt(scoreMatch[1], 10);
+
+        const todayEntryIndex = healthHistory.findIndex(entry => entry.date === currentDate);
+        
+        if (todayEntryIndex !== -1) {
+            healthHistory[todayEntryIndex].score = currentScore;
+            alert('Updated today\'s progress.');
+        } else {
+            healthHistory.push({ date: currentDate, score: currentScore });
+            alert('Progress for today saved!');
+        }
+        
+        healthHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        if (!progressSection.classList.contains('hidden')) {
+            renderProgressChart();
         }
     });
 

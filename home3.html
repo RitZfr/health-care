@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cozy Healthcare</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --baby-blue: #e6f2ff;
+            --soft-blue: #b3d9ff;
+            --medium-blue: #66a3ff;
+            --dark-blue: #0073e6;
+            --navy-blue: #1e3a8a;
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+            --transition: all 0.3s ease;
+            --border-radius: 16px;
+        }
+
+        .dark-mode {
+            --baby-blue: #1a3b5c;
+            --soft-blue: #2c5282;
+            --medium-blue: #3182ce;
+            --dark-blue: #90cdf4;
+            --navy-blue: #3b82f6;
+            --white: #2d3748;
+            --light-gray: #4a5568;
+            --text-dark: #e2e8f0;
+            --text-light: #cbd5e0;
+            --shadow: rgba(0, 0, 0, 0.25) 0px 4px 12px;
+        }
+
+        body {
+            background-color: var(--baby-blue);
+            color: var(--text-dark);
+            transition: var(--transition);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo h1 {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--navy-blue);
+            letter-spacing: 1px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--medium-blue);
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: var(--soft-blue);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--white);
+            border: none;
+            font-size: 1.2rem;
+        }
+
+        .icon-btn:hover {
+            background: var(--medium-blue);
+            transform: scale(1.1);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            z-index: 200;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--soft-blue);
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: var(--soft-blue);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--white);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background-color: var(--soft-blue);
+            color: var(--white);
+        }
+
+        .nav-item.active {
+            background-color: var(--medium-blue);
+            color: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            transition: var(--transition);
+            margin-top: 1rem;
+        }
+
+        .content-section {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--navy-blue);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--soft-blue);
+            font-weight: 700;
+        }
+
+        .section-text {
+            line-height: 1.6;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Notification System */
+        .notification-container {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 150;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .notification {
+            background: var(--white);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 300px;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification.hide {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .notification-icon {
+            color: var(--medium-blue);
+            font-size: 1.5rem;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--white);
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: auto;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            box-shadow: var(--shadow);
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--soft-blue);
+            border-radius: var(--border-radius);
+            background-color: var(--light-gray);
+            color: var(--text-dark);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--medium-blue);
+            box-shadow: 0 0 0 3px rgba(102, 163, 255, 0.2);
+        }
+
+        button[type="submit"],
+        .btn {
+            background: var(--medium-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 1rem;
+        }
+
+        button[type="submit"]:hover,
+        .btn:hover {
+            background: var(--dark-blue);
+            transform: translateY(-2px);
+        }
+
+        .auth-switch {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        .auth-switch a {
+            color: var(--medium-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-switch a:hover {
+            text-decoration: underline;
+        }
+
+        /* Card Styles */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .card {
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            color: var(--navy-blue);
+            margin-bottom: 1rem;
+        }
+
+        .card-content {
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .benefit-card {
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .benefit-card h4 {
+            color: var(--navy-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .benefit-card p {
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        /* Progress Bar */
+        .progress-card {
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .progress-bar-container {
+            height: 20px;
+            background-color: var(--soft-blue);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--medium-blue);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .content-section {
+                padding: 1.5rem;
+            }
+
+            .sidebar {
+                width: 250px;
+                left: -250px;
+            }
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 99;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-heartbeat logo-icon"></i>
+            <h1>Cozy Healthcare</h1>
+        </div>
+        <div class="header-icons">
+            <button class="icon-btn" id="notification-btn">
+                <i class="fas fa-bell"></i>
+            </button>
+            <button class="icon-btn" id="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="icon-btn" id="sidebar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="profile-section">
+            <div class="profile-img">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="profile-label">Profile</div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-section="home">
+                <i class="fas fa-home nav-icon"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item" data-section="signup">
+                <i class="fas fa-user-plus nav-icon"></i>
+                <span>Signup/Login</span>
+            </a>
+            <a href="#" class="nav-item" data-section="health">
+                <i class="fas fa-heartbeat nav-icon"></i>
+                <span>Health Tracking</span>
+            </a>
+            <a href="#" class="nav-item" data-section="reminders">
+                <i class="fas fa-bell nav-icon"></i>
+                <span>Reminders</span>
+            </a>
+            <a href="#" class="nav-item" data-section="doctors">
+                <i class="fas fa-user-md nav-icon"></i>
+                <span>Doctors to Consult</span>
+            </a>
+            <a href="#" class="nav-item" data-section="emergency">
+                <i class="fas fa-ambulance nav-icon"></i>
+                <span>Emergency</span>
+            </a>
+            <a href="#" class="nav-item" data-section="contacts">
+                <i class="fas fa-address-book nav-icon"></i>
+                <span>Contacts</span>
+            </a>
+            <a href="#" class="nav-item" data-section="about">
+                <i class="fas fa-info-circle nav-icon"></i>
+                <span>About</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notification-container"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home Section -->
+        <section id="home" class="content-section active">
+            <h2 class="section-title">Welcome to Cozy Healthcare</h2>
+            <p class="section-text">Your personalized healthcare companion designed to make managing your health a cozy
+                and peaceful experience.</p>
+
+            <h3>Why Track Your Health?</h3>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h4>Gain Awareness</h4>
+                    <p>Understand patterns in your sleep, energy, and mood. Knowledge is the first step to making
+                        positive changes.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Stay Motivated</h4>
+                    <p>Visualizing your progress on metrics like hydration and activity can be a powerful motivator to
+                        keep going.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Manage Conditions</h4>
+                    <p>Keep a reliable record of vitals like blood pressure and sugar levels to share with your
+                        healthcare provider.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Build Habits</h4>
+                    <p>Regularly logging your data helps turn healthy actions into second-nature habits for long-term
+                        wellness.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Signup/Login Section -->
+        <section id="signup" class="content-section">
+            <div id="registration-section">
+                <h2 class="section-title">Create Your Profile</h2>
+                <form id="registration-form" novalidate>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required maxlength="13">
+                        <small class="error-message"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <input type="number" id="age" name="age" required min="13">
+                        <small class="error-message"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" required maxlength="10">
+                        <small class="error-message"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                        <small class="error-message"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required minlength="8" maxlength="20">
+                        <small class="error-message"></small>
+                    </div>
+                    <button type="submit">Sign Up</button>
+                </form>
+                <p class="auth-switch">Already have an account? <a href="#" id="show-login-link">Log In</a></p>
+            </div>
+
+            <div id="login-section" class="hidden">
+                <h2 class="section-title">Log In</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-identifier">Email or Phone</label>
+                        <input type="text" id="login-identifier" name="login-identifier" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="login-password" required>
+                    </div>
+                    <button type="submit">Log In</button>
+                </form>
+                <p class="auth-switch">Don't have an account? <a href="#" id="show-signup-link">Sign Up</a></p>
+            </div>
+        </section>
+
+        <!-- Health Tracking Section -->
+        <section id="health" class="content-section">
+            <h2 class="section-title">Health Tracking</h2>
+            <p class="section-text">Track your health metrics and monitor your progress over time.</p>
+
+            <div class="progress-card">
+                <h3>Overall Health</h3>
+                <div class="progress-bar-container">
+                    <div id="health-bar" class="progress-bar" style="width: 50%;"></div>
+                </div>
+                <span id="health-bar-value">50%</span>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3 class="card-title">Step Count</h3>
+                    <p class="card-content">Track your daily steps and set goals to stay active.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Heart Rate</h3>
+                    <p class="card-content">Monitor your heart rate throughout the day.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Sleep Quality</h3>
+                    <p class="card-content">Track your sleep patterns and improve your rest.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Water Intake</h3>
+                    <p class="card-content">Log your daily water consumption.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reminders Section -->
+        <section id="reminders" class="content-section">
+            <h2 class="section-title">Reminders</h2>
+            <p class="section-text">Set reminders for medications, appointments, and health check-ups.</p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3 class="card-title">Medication Reminders</h3>
+                    <p class="card-content">Set reminders for your daily medications.</p>
+                    <button class="btn">Set Reminder</button>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Appointment Alerts</h3>
+                    <p class="card-content">Never miss a doctor's appointment again.</p>
+                    <button class="btn">Schedule</button>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Health Check-ups</h3>
+                    <p class="card-content">Regular health assessments and reminders.</p>
+                    <button class="btn">Set Reminder</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Doctors Section -->
+        <section id="doctors" class="content-section">
+            <h2 class="section-title">Doctors to Consult</h2>
+            <p class="section-text">Find and connect with healthcare professionals specialized in various fields.</p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3 class="card-title">General Physician</h3>
+                    <p class="card-content">For general health concerns and regular check-ups.</p>
+                    <button class="btn">Find Doctor</button>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Cardiologist</h3>
+                    <p class="card-content">Specialists in heart health and cardiovascular system.</p>
+                    <button class="btn">Find Doctor</button>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Dermatologist</h3>
+                    <p class="card-content">Skin, hair, and nail health specialists.</p>
+                    <button class="btn">Find Doctor</button>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Nutritionist</h3>
+                    <p class="card-content">Experts in diet and nutrition planning.</p>
+                    <button class="btn">Find Specialist</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Emergency Section -->
+        <section id="emergency" class="content-section">
+            <h2 class="section-title">Emergency</h2>
+            <p class="section-text">Quick access to emergency contacts and services when you need them most.</p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3 class="card-title">Emergency Contacts</h3>
+                    <p class="card-content">Quick dial for emergency services and contacts.</p>
+                    <button class="btn">View Contacts</button>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">First Aid Guide</h3>
+                    <p class="card-content">Step-by-step instructions for common emergencies.</p>
+                    <button class="btn">View Guide</button>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Nearby Hospitals</h3>
+                    <p class="card-content">Find the closest medical facilities to your location.</p>
+                    <button class="btn">Locate Facilities</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contacts Section -->
+        <section id="contacts" class="content-section">
+            <h2 class="section-title">Contacts</h2>
+            <p class="section-text">Manage your emergency contacts and healthcare providers.</p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3 class="card-title">Emergency Contacts</h3>
+                    <p class="card-content">Your trusted contacts for emergency situations.</p>
+                    <button class="btn">Manage Contacts</button>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Healthcare Providers</h3>
+                    <p class="card-content">Your doctors and medical specialists.</p>
+                    <button class="btn">View Providers</button>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Insurance Information</h3>
+                    <p class="card-content">Your health insurance details and contacts.</p>
+                    <button class="btn">View Information</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="content-section">
+            <h2 class="section-title">About Cozy Healthcare</h2>
+            <p class="section-text">Learn about our mission to make healthcare management more accessible and
+                comfortable.</p>
+
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h4>Our Mission</h4>
+                    <p>To create a peaceful, cozy space for managing your health journey with ease and comfort.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Our Vision</h4>
+                    <p>To empower individuals to take control of their health through intuitive tools and peaceful
+                        design.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Our Values</h4>
+                    <p>Compassion, simplicity, and innovation guide everything we do at Cozy Healthcare.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Cozy Healthcare. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // DOM Elements
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const overlay = document.getElementById('overlay');
+            const themeToggle = document.getElementById('theme-toggle');
+            const notificationBtn = document.getElementById('notification-btn');
+            const notificationContainer = document.getElementById('notification-container');
+            const navItems = document.querySelectorAll('.nav-item');
+            const contentSections = document.querySelectorAll('.content-section');
+            const showLoginLink = document.getElementById('show-login-link');
+            const showSignupLink = document.getElementById('show-signup-link');
+            const registrationSection = document.getElementById('registration-section');
+            const loginSection = document.getElementById('login-section');
+
+            // Sidebar Toggle
+            sidebarToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            });
+
+            // Overlay click to close sidebar
+            overlay.addEventListener('click', function () {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            });
+
+            // Theme Toggle
+            themeToggle.addEventListener('click', function () {
+                document.body.classList.toggle('dark-mode');
+                const icon = themeToggle.querySelector('i');
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                } else {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                }
+            });
+
+            // Navigation
+            navItems.forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // Remove active class from all items
+                    navItems.forEach(navItem => navItem.classList.remove('active'));
+
+                    // Add active class to clicked item
+                    this.classList.add('active');
+
+                    // Get the section to show
+                    const sectionId = this.getAttribute('data-section');
+
+                    // Hide all sections
+                    contentSections.forEach(section => section.classList.remove('active'));
+
+                    // Show the selected section
+                    document.getElementById(sectionId).classList.add('active');
+
+                    // Close sidebar on mobile
+                    if (window.innerWidth < 768) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+
+            // Auth section toggling
+            showLoginLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                registrationSection.classList.add('hidden');
+                loginSection.classList.remove('hidden');
+            });
+
+            showSignupLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                loginSection.classList.add('hidden');
+                registrationSection.classList.remove('hidden');
+            });
+
+            // Notification System
+            notificationBtn.addEventListener('click', function () {
+                createNotification('New Message', 'You have a new message from Dr. Smith regarding your appointment.');
+            });
+
+            function createNotification(title, message) {
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+
+                notification.innerHTML = `
+                    <i class="fas fa-bell notification-icon"></i>
+                    <div class="notification-content">
+                        <h3 class="notification-title">${title}</h3>
+                        <p class="notification-message">${message}</p>
+                    </div>
+                `;
+
+                notificationContainer.appendChild(notification);
+
+                // Show notification
+                setTimeout(() => {
+                    notification.classList.add('show');
+                }, 100);
+
+                // Hide and remove notification after 5 seconds
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    notification.classList.add('hide');
+
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 5000);
+            }
+
+            // Demo notifications on load
+            setTimeout(() => {
+                createNotification('Welcome!', 'Thank you for choosing Cozy Healthcare. We hope you have a peaceful experience.');
+            }, 1000);
+
+            setTimeout(() => {
+                createNotification('Health Tip', 'Remember to drink enough water throughout the day for better health.');
+            }, 3000);
+
+            // Form validation
+            const registrationForm = document.getElementById('registration-form');
+            if (registrationForm) {
+                registrationForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    // Simple validation
+                    let isValid = true;
+
+                    const nameInput = document.getElementById('name');
+                    if (nameInput.value.trim() === '') {
+                        showError(nameInput, 'Name is required');
+                        isValid = false;
+                    } else {
+                        clearError(nameInput);
+                    }
+
+                    const ageInput = document.getElementById('age');
+                    if (ageInput.value === '' || parseInt(ageInput.value) < 13) {
+                        showError(ageInput, 'You must be at least 13 years old');
+                        isValid = false;
+                    } else {
+                        clearError(ageInput);
+                    }
+
+                    if (isValid) {
+                        // Form is valid, you would typically send data to server here
+                        createNotification('Success', 'Your account has been created successfully!');
+                        registrationForm.reset();
+                    }
+                });
+            }
+
+            function showError(input, message) {
+                const formGroup = input.parentElement;
+                const errorMessage = formGroup.querySelector('.error-message');
+                errorMessage.textContent = message;
+                input.style.borderColor = '#ff4d4d';
+            }
+
+            function clearError(input) {
+                const formGroup = input.parentElement;
+                const errorMessage = formGroup.querySelector('.error-message');
+                errorMessage.textContent = '';
+                input.style.borderColor = '';
+            }
+        });
+    </script>
+</body>
+
+</html>

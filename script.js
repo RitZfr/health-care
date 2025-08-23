@@ -22,6 +22,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const showSignupLink = document.getElementById('show-signup-link');
     let registeredUser = null;
 
+    // Reminder elements
+    const reminderForm = document.getElementById('reminder-form');
+    const reminderText = document.getElementById('reminder-text');
+    const reminderTime = document.getElementById('reminder-time');
+    const remindersList = document.getElementById('reminders-list');
+    const alarmSound = document.getElementById('alarm-sound');
+    let reminders = [];
+
+    // Progress History elements
+    const progressSection = document.getElementById('progress-section');
+    const progressChartCanvas = document.getElementById('progress-chart');
+    const saveProgressBtn = document.getElementById('save-progress-btn');
+    let healthHistory = []; // Array of { date: 'YYYY-MM-DD', score: 85 }
+    let progressChart = null; // To hold the chart instance
+
     // Sidebar elements
     const menuButton = document.getElementById('menu-button');
     const sidebar = document.getElementById('sidebar');
@@ -35,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'registration-section': document.getElementById('registration-section'),
         'login-section': document.getElementById('login-section'),
         'dashboard-section': document.getElementById('dashboard-section'),
+        'progress-section': document.getElementById('progress-section'),
         'reminders-section': document.getElementById('reminders-section'),
         'doctors-section': document.getElementById('doctors-section'),
         'emergency-section': document.getElementById('emergency-section'),
@@ -47,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         '#home-section': 'home-section',
         '#registration-section': 'registration-section',
         '#dashboard-section': 'dashboard-section',
+        '#progress-section': 'progress-section',
         '#reminders-section': 'reminders-section',
         '#doctors-section': 'doctors-section',
         '#emergency-section': 'emergency-section',
@@ -104,6 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Show target section
                 if (sections[sectionKey]) {
                     sections[sectionKey].classList.remove('hidden');
+                    // Special handler for progress chart
+                    if (sectionKey === 'progress-section') {
+                        renderProgressChart();
+                    }
                      // The footer is part of the main flow, so we just scroll to it
                     if (sectionKey === 'footer') {
                         sections[sectionKey].scrollIntoView({ behavior: 'smooth' });
@@ -115,13 +136,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const healthMetrics = {
-        height: { label: 'Height', value: 170, unit: 'cm', max: 220, weight: 0.5 },
-        weight: { label: 'Weight', value: 70, unit: 'kg', max: 150, weight: 1.5 },
-        hydration: { label: 'Hydration', value: 8, unit: 'glasses', max: 12, weight: 1 },
-        heartbeat: { label: 'Heartbeat', value: 70, unit: 'bpm', max: 120, weight: 1.5 },
-        bloodPressure: { label: 'Blood Pressure', value: '120/80', unit: 'mmHg', weight: 1.5, type: 'text' },
-        sugarLevel: { label: 'Sugar Level', value: 90, unit: 'mg/dL', max: 140, weight: 1.5 },
-        sleep: { label: 'Sleep Schedule', value: 8, unit: 'hours', max: 10, weight: 1.5 }
+        height: { label: 'Height', value: null, unit: 'cm', scoreWeight: 0, type: 'number' },
+        weight: { label: 'Weight', value: null, unit: 'kg', scoreWeight: 2, type: 'number' },
+        bmi: { label: 'BMI', value: null, unit: '', status: '' },
+        hydration: { label: 'Hydration', value: null, unit: 'glasses', scoreWeight: 1, type: 'number' },
+        heartbeat: { label: 'Heartbeat', value: null, unit: 'bpm', scoreWeight: 1.5, idealMin: 60, idealMax: 100, type: 'number' },
+        bloodPressure: { label: 'Blood Pressure', value: null, unit: 'mmHg', scoreWeight: 1.5, type: 'text' },
+        sugarLevel: { label: 'Sugar Level (Fasting)', value: null, unit: 'mg/dL', scoreWeight: 1.5, idealMin: 70, idealMax: 100, type: 'number' },
+        sleep: { label: 'Sleep', value: null, unit: 'hours', scoreWeight: 1.5, idealMin: 7, idealMax: 9, type: 'number' }
     };
 
     function clearValidationErrors() {
@@ -272,52 +294,407 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- Progress History ---
+    function renderProgressChart() {
+        if (progressChart) {
+            progressChart.destroy(); // Destroy previous chart instance to avoid conflicts
+        }
+    
+        const container = document.querySelector('.chart-container');
+        let message = container.querySelector('.no-data-message');
+        if (message) message.remove(); // Clear previous message/button
+    
+        if (healthHistory.length === 0) {
+            progressChartCanvas.style.display = 'none';
+            message = document.createElement('div');
+            message.className = 'no-data-message';
+            message.innerHTML = `
+                <p>No progress saved yet. Start your journey today!</p>
+                <button id="start-tracking-btn">Start Tracking Now</button>
+            `;
+            container.prepend(message);
+            
+            document.getElementById('start-tracking-btn').addEventListener('click', () => {
+                // Hide all sections
+                Object.values(sections).forEach(section => {
+                    if(section) section.classList.add('hidden');
+                });
+                // Show dashboard
+                sections['dashboard-section'].classList.remove('hidden');
+            });
+            
+            return;
+        } 
+        
+        progressChartCanvas.style.display = 'block';
+    
+        const labels = healthHistory.map(entry => entry.date);
+        const data = healthHistory.map(entry => entry.score);
+    
+        const ctx = progressChartCanvas.getContext('2d');
+        progressChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Overall Health Score History',
+                    data: data,
+                    borderColor: 'var(--progress-bar-color)',
+                    backgroundColor: 'rgba(137, 171, 205, 0.2)',
+                    fill: true,
+                    tension: 0.2,
+                    pointBackgroundColor: 'var(--primary-color)',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Health Score (%)'
+                        }
+                    },
+                    x: {
+                         title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Score: ${context.parsed.y}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    saveProgressBtn.addEventListener('click', () => {
+        const currentDate = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format
+        const currentScoreText = healthBarValue.textContent;
+        
+        const scoreMatch = currentScoreText.match(/(\d+)%/);
+        if (!scoreMatch) {
+            alert("No score to save. Please enter some metrics first.");
+            return;
+        }
+        
+        const currentScore = parseInt(scoreMatch[1], 10);
+
+        const todayEntryIndex = healthHistory.findIndex(entry => entry.date === currentDate);
+        
+        if (todayEntryIndex !== -1) {
+            healthHistory[todayEntryIndex].score = currentScore;
+            alert('Updated today\'s progress.');
+        } else {
+            healthHistory.push({ date: currentDate, score: currentScore });
+            alert('Progress for today saved!');
+        }
+        
+        healthHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        if (!progressSection.classList.contains('hidden')) {
+            renderProgressChart();
+        }
+    });
+
+    // --- Reminder and Alarm System ---
+
+    function renderReminders() {
+        remindersList.innerHTML = '';
+        if (reminders.length === 0) {
+            remindersList.innerHTML = '<p>No reminders set yet. Add one above!</p>';
+            return;
+        }
+
+        reminders.sort((a, b) => a.time.localeCompare(b.time));
+
+        reminders.forEach(reminder => {
+            const reminderEl = document.createElement('div');
+            reminderEl.className = 'reminder-item';
+            reminderEl.dataset.id = reminder.id;
+            
+            const timeFormatted = reminder.time.split(':');
+            const hours = parseInt(timeFormatted[0], 10);
+            const minutes = timeFormatted[1];
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12; // convert 0 to 12
+            
+            reminderEl.innerHTML = `
+                <div class="reminder-details">
+                    <span class="reminder-time">${displayHours}:${minutes} ${ampm}</span>
+                    <span class="reminder-text">${reminder.text}</span>
+                </div>
+                <button class="delete-reminder-btn" title="Delete Reminder">&times;</button>
+            `;
+            remindersList.appendChild(reminderEl);
+        });
+    }
+
+    function addReminder(e) {
+        e.preventDefault();
+        const text = reminderText.value.trim();
+        const time = reminderTime.value;
+
+        if (!text || !time) {
+            alert('Please fill in both fields for the reminder.');
+            return;
+        }
+
+        const newReminder = {
+            id: Date.now(),
+            text,
+            time,
+        };
+
+        reminders.push(newReminder);
+        renderReminders();
+        reminderForm.reset();
+    }
+
+    remindersList.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-reminder-btn')) {
+            const id = e.target.closest('.reminder-item').dataset.id;
+            reminders = reminders.filter(reminder => reminder.id != id);
+            renderReminders();
+        }
+    });
+
+    function checkAlarms() {
+        if (reminders.length === 0) return;
+
+        const now = new Date();
+        const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        
+        const dueReminders = reminders.filter(r => r.time === currentTime);
+
+        if (dueReminders.length > 0) {
+            alarmSound.play().catch(err => console.error("Audio play failed:", err));
+            dueReminders.forEach(due => {
+                alert(`Reminder: ${due.text}`);
+                // Remove the reminder after it has gone off
+                reminders = reminders.filter(r => r.id !== due.id);
+            });
+            renderReminders();
+        }
+    }
+    
+    reminderForm.addEventListener('submit', addReminder);
+    // Initial render
+    renderReminders(); 
+    // Check for alarms every 10 seconds to reduce load
+    setInterval(checkAlarms, 10000); 
+
+    // ------------------------------------
+
     function populateDashboard() {
         trackersGrid.innerHTML = '';
         for (const key in healthMetrics) {
             const metric = healthMetrics[key];
             const card = document.createElement('div');
             card.className = 'tracker-card';
-            card.innerHTML = `
-                <h3>${metric.label}</h3>
-                <div class="tracker-value">${metric.value} ${metric.unit}</div>
-                <input type="${metric.type || 'number'}" class="tracker-input" data-metric="${key}" value="${metric.value}" placeholder="Update value...">
-            `;
+            card.id = `card-${key}`;
+
+            if (key === 'bmi') {
+                 card.innerHTML = `
+                    <h3>${metric.label}</h3>
+                    <div class="tracker-value" id="bmi-value">--</div>
+                    <p class="metric-status" id="bmi-status">Enter height and weight to calculate.</p>
+                `;
+            } else {
+                card.innerHTML = `
+                    <h3>${metric.label}</h3>
+                    <div class="tracker-value">${metric.value || '--'} ${metric.unit}</div>
+                    <input type="${metric.type || 'number'}" class="tracker-input" data-metric="${key}" value="" placeholder="${metric.type === 'text' ? 'e.g., 120/80' : 'Enter value...'}">
+                    <p class="metric-status"></p>
+                `;
+            }
             trackersGrid.appendChild(card);
         }
 
         document.querySelectorAll('.tracker-input').forEach(input => {
-            input.addEventListener('change', (e) => {
+            input.addEventListener('input', (e) => {
                 const metricKey = e.target.dataset.metric;
-                const newValue = e.target.type === 'number' ? parseFloat(e.target.value) : e.target.value;
+                const value = e.target.value;
                 
-                if (!isNaN(newValue) || e.target.type === 'text') {
-                    healthMetrics[metricKey].value = newValue;
-                    e.target.previousElementSibling.textContent = `${newValue} ${healthMetrics[metricKey].unit}`;
+                if (metricKey) {
+                     if (healthMetrics[metricKey].type === 'number') {
+                        healthMetrics[metricKey].value = value ? parseFloat(value) : null;
+                     } else {
+                        healthMetrics[metricKey].value = value || null;
+                     }
+                    
+                    const valueDisplay = e.target.parentElement.querySelector('.tracker-value');
+                    valueDisplay.textContent = `${healthMetrics[metricKey].value || '--'} ${healthMetrics[metricKey].unit}`;
                     updateOverallHealth();
                 }
             });
         });
     }
 
+    function calculateScore(value, min, max) {
+        if (value === null || isNaN(value)) return 0;
+        if (value >= min && value <= max) return 100;
+        if (value < min) return Math.max(0, 100 - ((min - value) / min) * 100);
+        return Math.max(0, 100 - ((value - max) / max) * 100);
+    }
+    
+    function updateMetricCard(key, statusText, statusClass = '') {
+        const card = document.getElementById(`card-${key}`);
+        if (card) {
+            const statusEl = card.querySelector('.metric-status');
+            statusEl.textContent = statusText;
+            statusEl.className = 'metric-status'; // Reset classes
+            if (statusClass) {
+                statusEl.classList.add(statusClass);
+            }
+        }
+    }
+
     function updateOverallHealth() {
         let totalScore = 0;
         let totalWeight = 0;
+        let metricsEntered = 0;
 
-        for (const key in healthMetrics) {
-            const metric = healthMetrics[key];
-            if (metric.type !== 'text') {
-                 // Simple normalization: value / max * 100
-                 // In a real app, this would be more complex (e.g., ideal ranges)
-                const score = (metric.value / metric.max) * 100;
-                totalScore += score * metric.weight;
-                totalWeight += metric.weight;
+        // --- Individual Metric Scoring ---
+
+        // 1. BMI
+        const height = healthMetrics.height.value;
+        const weight = healthMetrics.weight.value;
+        let bmiScore = 0;
+        if (height && weight && height > 0) {
+            const heightInMeters = height / 100;
+            const bmi = weight / (heightInMeters * heightInMeters);
+            healthMetrics.bmi.value = bmi.toFixed(1);
+            
+            document.getElementById('bmi-value').textContent = healthMetrics.bmi.value;
+
+            if (bmi < 18.5) {
+                healthMetrics.bmi.status = 'Underweight';
+                bmiScore = 75;
+                updateMetricCard('bmi', 'Status: Underweight. Consider consulting a doctor for advice on healthy weight gain.', 'warn');
+            } else if (bmi >= 18.5 && bmi <= 24.9) {
+                healthMetrics.bmi.status = 'Healthy Weight';
+                bmiScore = 100;
+                 updateMetricCard('bmi', 'Status: Healthy Weight. Great job!', 'good');
+            } else if (bmi >= 25 && bmi <= 29.9) {
+                healthMetrics.bmi.status = 'Overweight';
+                bmiScore = 75;
+                updateMetricCard('bmi', 'Status: Overweight. Focus on a balanced diet and regular exercise.', 'warn');
+            } else {
+                healthMetrics.bmi.status = 'Obese';
+                bmiScore = 50;
+                 updateMetricCard('bmi', 'Status: Obese. It is highly recommended to consult a healthcare provider.', 'bad');
             }
+        } else {
+            healthMetrics.bmi.value = null;
+            document.getElementById('bmi-value').textContent = '--';
+            updateMetricCard('bmi', 'Enter height and weight to calculate.');
+        }
+
+        if(healthMetrics.bmi.value !== null) {
+            totalScore += bmiScore * healthMetrics.weight.scoreWeight;
+            totalWeight += healthMetrics.weight.scoreWeight;
+            metricsEntered += 2; // Count height and weight
+        }
+
+        // 2. Hydration
+        const hydrationTarget = healthMetrics.bmi.status === 'Overweight' || healthMetrics.bmi.status === 'Obese' ? 10 : 8;
+        const hydrationValue = healthMetrics.hydration.value;
+        updateMetricCard('hydration', `Recommended: ${hydrationTarget} glasses/day.`);
+        if(hydrationValue !== null) {
+            const hydrationScore = Math.min(100, (hydrationValue / hydrationTarget) * 100);
+            totalScore += hydrationScore * healthMetrics.hydration.scoreWeight;
+            totalWeight += healthMetrics.hydration.scoreWeight;
+            metricsEntered++;
         }
         
-        const healthPercentage = Math.min(100, Math.max(0, totalScore / totalWeight));
+        // 3. Heartbeat
+        const { heartbeat } = healthMetrics;
+        if(heartbeat.value !== null) {
+            totalScore += calculateScore(heartbeat.value, heartbeat.idealMin, heartbeat.idealMax) * heartbeat.scoreWeight;
+            totalWeight += heartbeat.scoreWeight;
+            updateMetricCard('heartbeat', 'Ideal resting range: 60-100 bpm.');
+            metricsEntered++;
+        }
+
+        // 4. Blood Pressure
+        const { bloodPressure } = healthMetrics;
+        let bpScore = 0;
+        if(bloodPressure.value) {
+            const parts = bloodPressure.value.split('/');
+            if (parts.length === 2) {
+                const systolic = parseInt(parts[0], 10);
+                const diastolic = parseInt(parts[1], 10);
+                if (!isNaN(systolic) && !isNaN(diastolic)) {
+                    if (systolic < 120 && diastolic < 80) bpScore = 100;
+                    else if (systolic <= 129 && diastolic < 80) bpScore = 80; // Elevated
+                    else if (systolic <= 139 || diastolic <= 89) bpScore = 60; // Stage 1
+                    else bpScore = 40; // Stage 2+
+                }
+            }
+             updateMetricCard('bloodPressure', 'Ideal: < 120/80 mmHg.');
+        }
+         if(bloodPressure.value !== null) {
+            totalScore += bpScore * bloodPressure.scoreWeight;
+            totalWeight += bloodPressure.scoreWeight;
+            metricsEntered++;
+        }
+
+        // 5. Sugar Level
+        const { sugarLevel } = healthMetrics;
+        if(sugarLevel.value !== null) {
+            totalScore += calculateScore(sugarLevel.value, sugarLevel.idealMin, sugarLevel.idealMax) * sugarLevel.scoreWeight;
+            totalWeight += sugarLevel.scoreWeight;
+            updateMetricCard('sugarLevel', 'Ideal fasting range: 70-100 mg/dL.');
+            metricsEntered++;
+        }
+
+        // 6. Sleep
+        const { sleep } = healthMetrics;
+         if(sleep.value !== null) {
+            totalScore += calculateScore(sleep.value, sleep.idealMin, sleep.idealMax) * sleep.scoreWeight;
+            totalWeight += sleep.scoreWeight;
+            updateMetricCard('sleep', 'Ideal range: 7-9 hours/night.');
+            metricsEntered++;
+        }
+        
+        // --- Final Calculation ---
+        const healthBarMessage = document.getElementById('health-bar-message');
+        if (totalWeight === 0 || metricsEntered < 3) {
+            healthBar.style.width = '0%';
+            healthBarValue.textContent = 'Enter at least 3 metrics to see your score';
+            healthBarMessage.textContent = '';
+            return;
+        }
+
+        const healthPercentage = Math.round(totalScore / totalWeight);
         
         healthBar.style.width = `${healthPercentage}%`;
-        healthBarValue.textContent = `${Math.round(healthPercentage)}%`;
+        healthBarValue.textContent = `Overall Score: ${healthPercentage}%`;
+
+        if (healthPercentage >= 90) {
+             healthBarMessage.textContent = "Excellent! You have a great daily routine.";
+        } else if (healthPercentage >= 70) {
+            healthBarMessage.textContent = "Good job! Keep up the healthy habits.";
+        } else if (healthPercentage >= 50) {
+            healthBarMessage.textContent = "You're on the right track. A few adjustments could make a big difference.";
+        } else {
+            healthBarMessage.textContent = "There's room for improvement. Let's focus on one or two areas to start.";
+        }
     }
 });

@@ -11,7 +11,7 @@
 
 body {
     font-family: 'Nunito', sans-serif;
-    background: linear-gradient(to bottom, var(--secondary-color), white);
+    background: linear-gradient(to bottom, var(--secondary-color), #FFFFFF);
     color: var(--text-color);
     line-height: 1.6;
     margin: 0;
@@ -312,7 +312,7 @@ a:hover {
 
 button {
     background-color: var(--primary-color);
-    color: white;
+    color: #FFFFFF;
     padding: 12px 20px;
     border: none;
     border-radius: 8px;
@@ -606,5 +606,750 @@ button:active {
 footer {
     border-top: 2px solid var(--secondary-color);
     padding-top: 20px;
+    margin-top: 40px;
+=======
+
+    --primary-color: #a7c7e7;
+
+    --secondary-color: #dbe9f7;
+
+    --background-color: #f5f8fa;
+
+    --text-color: #2c3e50; /* Darker text */
+
+    --progress-bar-color: #89abcd;
+
+    --card-bg-color: #ffffff;
+
+    --shadow-color: rgba(0, 0, 0, 0.05);
+
+    --border-radius: 12px;
+
+}
+
+
+
+body {
+
+    font-family: 'Nunito', sans-serif;
+
+    background: linear-gradient(to top, #dbe9f7, #f5f8fa);
+
+    color: var(--text-color);
+
+    line-height: 1.6;
+
+    margin: 0;
+
+    padding: 20px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    min-height: 100vh;
+
+    box-sizing: border-box;
+
+}
+
+
+
+header, main, footer {
+
+    width: 100%;
+
+    max-width: 800px;
+
+    margin-bottom: 30px;
+
+    text-align: center;
+
+}
+
+
+
+h1, h2, h3 {
+
+    color: var(--primary-color);
+
+    font-weight: 700;
+
+}
+
+
+
+h1 {
+
+    font-size: 2.5em;
+
+    margin-bottom: 0.2em;
+
+}
+
+
+
+h2 {
+
+    font-size: 2em;
+
+    border-bottom: 2px solid var(--secondary-color);
+
+    padding-bottom: 10px;
+
+    margin-bottom: 20px;
+
+}
+
+
+
+a {
+
+    color: var(--primary-color);
+
+    text-decoration: none;
+
+}
+
+
+
+a:hover {
+
+    text-decoration: underline;
+
+}
+
+
+
+/* Home Page Styles */
+
+#home-section .intro-text {
+
+    font-size: 1.1em;
+
+    margin-bottom: 40px;
+
+    max-width: 700px;
+
+    margin-left: auto;
+
+    margin-right: auto;
+
+}
+
+
+
+#home-section h3 {
+
+    margin-bottom: 20px;
+
+    font-size: 1.8em;
+
+}
+
+
+
+.benefits-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+    gap: 20px;
+
+    text-align: left;
+
+}
+
+
+
+.benefit-card {
+
+    background-color: var(--card-bg-color);
+
+    padding: 25px;
+
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 4px 15px var(--shadow-color);
+
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+}
+
+
+
+.benefit-card:hover {
+
+    transform: translateY(-5px);
+
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+
+}
+
+
+
+.benefit-card h4 {
+
+    color: var(--primary-color);
+
+    margin-top: 0;
+
+    font-size: 1.2em;
+
+}
+
+
+
+.benefit-card p {
+
+    margin-bottom: 0;
+
+}
+
+
+
+/* Form Styles */
+
+#registration-section, #login-section {
+
+    background-color: var(--card-bg-color);
+
+    padding: 30px;
+
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 4px 15px var(--shadow-color);
+
+    margin-bottom: 20px; /* Added to give space between form and other sections */
+
+}
+
+
+
+.auth-switch {
+
+    margin-top: 20px;
+
+    font-size: 0.9em;
+
+}
+
+
+
+.form-group {
+
+    margin-bottom: 15px;
+
+    text-align: left;
+
+}
+
+
+
+.form-group label {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-weight: 600;
+
+}
+
+
+
+.form-group input {
+
+    width: 100%;
+
+    padding: 10px;
+
+    border: 1px solid var(--secondary-color);
+
+    border-radius: 8px;
+
+    box-sizing: border-box;
+
+    font-family: 'Nunito', sans-serif;
+
+}
+
+
+
+.form-group input:focus {
+
+    outline: none;
+
+    border-color: var(--primary-color);
+
+    box-shadow: 0 0 5px rgba(167, 199, 231, 0.5);
+
+}
+
+
+
+.error-message {
+
+    color: #e53e3e;
+
+    font-size: 0.8em;
+
+    display: none;
+
+    margin-top: 5px;
+
+}
+
+
+
+.form-group input.invalid {
+
+    border-color: #e53e3e;
+
+}
+
+
+
+button {
+
+    background-color: var(--primary-color);
+
+    color: #FFFFFF;
+
+    padding: 12px 20px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 1em;
+
+    font-family: 'Nunito', sans-serif;
+
+    transition: background-color 0.3s ease;
+
+    margin-top: 10px;
+
+}
+
+
+
+#registration-form button {
+
+    width: auto;
+
+    padding: 12px 40px;
+
+}
+
+
+
+button:hover {
+
+    background-color: #92b5d8;
+
+}
+
+
+
+/* Sidebar and Menu Button Styles */
+
+#menu-button {
+
+    position: fixed;
+
+    top: 20px;
+
+    left: 20px;
+
+    z-index: 1001;
+
+    cursor: pointer;
+
+    background: var(--card-bg-color);
+
+    border: none;
+
+    border-radius: 50%;
+
+    width: 50px;
+
+    height: 50px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 4px;
+
+    box-shadow: 0 2px 10px var(--shadow-color);
+
+    padding: 0;
+
+    transition: all 0.3s ease;
+
+}
+
+
+
+#menu-button:hover {
+
+    transform: scale(1.1);
+
+    box-shadow: 0 4px 15px var(--shadow-color);
+
+}
+
+
+
+#menu-button .dot {
+
+    width: 5px;
+
+    height: 5px;
+
+    background-color: var(--primary-color);
+
+    border-radius: 50%;
+
+    transition: all 0.3s ease;
+
+}
+
+
+
+#menu-button:hover .dot:nth-child(1) {
+
+    transform: translateY(-2px);
+
+}
+
+
+
+#menu-button:hover .dot:nth-child(3) {
+
+    transform: translateY(2px);
+
+}
+
+
+
+#sidebar {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: 280px;
+
+    height: 100%;
+
+    background-color: var(--card-bg-color);
+
+    z-index: 1002;
+
+    transform: translateX(-100%);
+
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    padding: 60px 0;
+
+    box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+
+    box-sizing: border-box;
+
+}
+
+
+
+#sidebar.open {
+
+    transform: translateX(0);
+
+}
+
+
+
+#close-button {
+
+    position: absolute;
+
+    top: 15px;
+
+    right: 15px;
+
+    background: none;
+
+    border: none;
+
+    font-size: 2.5em;
+
+    color: var(--text-color);
+
+    cursor: pointer;
+
+    padding: 0;
+
+    line-height: 1;
+
+    width: auto;
+
+}
+
+
+
+#sidebar ul {
+
+    list-style: none;
+
+    padding: 0;
+
+    margin: 0;
+
+}
+
+
+
+#sidebar li a {
+
+    display: block;
+
+    padding: 15px 30px;
+
+    color: var(--text-color);
+
+    text-decoration: none;
+
+    font-size: 1.1em;
+
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    border-bottom: 1px solid var(--secondary-color);
+
+}
+
+
+
+#sidebar li:first-child a {
+
+     border-top: 1px solid var(--secondary-color);
+
+}
+
+
+
+#sidebar li a:hover {
+
+    background-color: var(--secondary-color);
+
+    color: var(--primary-color);
+
+}
+
+
+
+#overlay {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    background-color: rgba(0, 0, 0, 0.4);
+
+    z-index: 1000;
+
+}
+
+
+
+#overlay.visible {
+
+    opacity: 1;
+
+    pointer-events: auto;
+
+}
+
+
+
+/* Dashboard Styles */
+
+.hidden {
+
+    display: none;
+
+}
+
+
+
+#dashboard-section h2 {
+
+    border: none;
+
+}
+
+
+
+.progress-card {
+
+    background-color: var(--card-bg-color);
+
+    padding: 20px;
+
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 4px 15px var(--shadow-color);
+
+    margin-bottom: 30px;
+
+}
+
+
+
+.progress-bar-container {
+
+    width: 100%;
+
+    background-color: var(--secondary-color);
+
+    border-radius: 20px;
+
+    height: 20px;
+
+    margin: 10px 0;
+
+    overflow: hidden;
+
+}
+
+
+
+.progress-bar {
+
+    background-color: var(--progress-bar-color);
+
+    height: 100%;
+
+    border-radius: 20px 0 0 20px;
+
+    transition: width 0.5s ease-in-out;
+
+}
+
+
+
+#health-bar-value {
+
+    font-weight: 700;
+
+    color: var(--primary-color);
+
+}
+
+
+
+.trackers-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+    gap: 20px;
+
+}
+
+
+
+.tracker-card {
+
+    background-color: var(--card-bg-color);
+
+    padding: 20px;
+
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 4px 15px var(--shadow-color);
+
+    text-align: left;
+
+}
+
+
+
+.tracker-card h3 {
+
+    margin-top: 0;
+
+}
+
+
+
+.tracker-value {
+
+    font-size: 1.5em;
+
+    font-weight: 700;
+
+    margin-bottom: 10px;
+
+}
+
+
+
+.tracker-input {
+
+    width: calc(100% - 20px);
+
+    padding: 8px 10px;
+
+    border: 1px solid var(--secondary-color);
+
+    border-radius: 8px;
+
+    font-family: 'Nunito', sans-serif;
+
+}
+
+
+
+.page-section {
+
+    background-color: var(--card-bg-color);
+
+    padding: 30px;
+
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 4px 15px var(--shadow-color);
+
+    text-align: center;
+
+}
+
+
+
+footer {
+
+    border-top: 2px solid var(--secondary-color);
+
+    padding-top: 20px;
+
     margin-top: 40px;
 }
